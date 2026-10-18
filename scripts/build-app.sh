@@ -33,6 +33,8 @@ xcrun actool "$ICONTMP/AppIcon.icon" --compile "$APP/Contents/Resources" --app-i
   --platform macosx --minimum-deployment-target 26.0 \
   --output-partial-info-plist "$ICONTMP/partial.plist" >/dev/null
 rm -rf "$ICONTMP"
+# Translations (English is the development language; keys are the English strings).
+cp -R "$ROOT"/Resources/Localization/*.lproj "$APP/Contents/Resources/"
 # Pre-rendered PNGs for the icon picker and the alternative icons.
 mkdir -p "$APP/Contents/Resources/Icons"
 cp "$ROOT"/Resources/Icons/*.png "$APP/Contents/Resources/Icons/"

@@ -12,7 +12,7 @@ Thanks for helping! Ticker is intentionally small, so focused pull requests are 
 
 - Use Swift 6 with strict concurrency. App types are `@MainActor`.
 - Prefer Apple's own components and Liquid Glass APIs over custom drawing.
-- User-facing text is currently German. Code, comments and commit messages are English. Contributions that add localization (`Localizable.xcstrings`) are very welcome.
+- Code, comments and commit messages are English. UI text is written as English string literals and translated in `Resources/Localization/<lang>.lproj/Localizable.strings`. If you add a string, add it to every language file. If you add a language, see “Localization” in AGENTS.md. Native-speaker fixes are very welcome.
 - If you change the UI, regenerate the screenshots with `scripts/screenshots.sh` (this needs Screen Recording permission for your terminal).
 - Keep `README.md`, `README.de.md` and `AGENTS.md` up to date with your change.
 

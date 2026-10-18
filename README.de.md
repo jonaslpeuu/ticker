@@ -24,6 +24,7 @@ Ein schlanker Zähler für macOS 26+ (Tahoe und neuer), der in der **Menüleiste
   - *Immer sichtbar*
   - *Nur per Tastenkürzel*: Das „Anzeigen“-Kürzel blendet ein und aus.
 - **Frei belegbare globale Kürzel** für Hochzählen, Runterzählen, Anzeigen und Zurücksetzen. Möglich sind normale Kombinationen (z. B. `⌃⇧⌫`) und **reine Modifier-Kombinationen** (z. B. nur `⌃⇧`).
+- **Mehrsprachig**: Englisch, Deutsch, Französisch, Spanisch, Italienisch, Japanisch und vereinfachtes Chinesisch. Ticker folgt der Systemsprache des Macs, alles andere wird auf Englisch angezeigt. Unter **Einstellungen → Allgemein** lässt sich die Sprache auch fest einstellen.
 - **App-Icon wählbar**: vier Liquid-Glass-Icons unter **Einstellungen → App-Icon**. Das Standard-Icon *Kachel* rendert macOS live in jedem Icon-Stil (Standard, Dunkel, Klar, Getönt).
 - Schrittweite, Startwert, negative Werte erlauben, Klick-Ton, Zahl in der Menüleiste anzeigen, Start bei der Anmeldung.
 - Animierte Zahl (`numericText`-Übergang), Zählerstand bleibt nach einem Neustart erhalten.
@@ -72,7 +73,7 @@ cd ticker
 scripts/install.sh
 ```
 
-Das Skript baut die Release-Version, installiert sie nach **`/Applications/Ticker.app`** und startet sie. Beim ersten Start aus `/Applications` trägt sich Ticker automatisch als **Anmeldeobjekt** ein und läuft ab dann nach jedem Hochfahren. Abschalten lässt sich das unter Einstellungen → Zähler → „Bei Anmeldung starten“ oder in den Systemeinstellungen unter Allgemein → Anmeldeobjekte.
+Das Skript baut die Release-Version, installiert sie nach **`/Applications/Ticker.app`** und startet sie. Beim ersten Start aus `/Applications` trägt sich Ticker automatisch als **Anmeldeobjekt** ein und läuft ab dann nach jedem Hochfahren. Abschalten lässt sich das unter Einstellungen → Allgemein → „Bei Anmeldung starten“ oder in den Systemeinstellungen unter Allgemein → Anmeldeobjekte.
 
 Signiert wird mit dem ersten gefundenen „Apple Development“-Zertifikat. So bleibt die Bedienungshilfen-Freigabe auch nach Updates erhalten. Ein anderes Zertifikat lässt sich mit `TICKER_SIGN_IDENTITY` festlegen, `-` steht für ad hoc. Für ein Update einfach `scripts/install.sh` erneut ausführen.
 
@@ -113,10 +114,11 @@ swift scripts/make-icons.swift && scripts/render-icon-previews.sh
 ## Bedienung
 
 1. Auf die Zahl in der Menüleiste klicken. Dort gibt es −/+, Zurücksetzen, „Fenster anzeigen“ und die Position.
-2. **Einstellungen…** (`⌘,` im Panel) hat drei Tabs:
+2. **Einstellungen…** (`⌘,` im Panel) hat vier Tabs:
    - **Fenster**: Position, Bildschirm, Textfarbe, Glas-Stil, Größe, Seitenverhältnis, Randabstand, Sichtbarkeit.
    - **Tastenkürzel**: Auf ein Kürzel klicken und die neue Kombination drücken. Für reine Modifier-Kürzel die Tasten zusammen drücken und loslassen. `Esc` bricht ab, `ⓧ` entfernt das Kürzel.
-   - **Zähler**: Stand direkt setzen, Schrittweite, Startwert, negative Werte, Ton, Menüleistenanzeige, Autostart.
+   - **Allgemein**: Stand direkt setzen, Schrittweite, Startwert, negative Werte, Ton, Sprache, Menüleistenanzeige, Autostart.
+   - **App-Icon**: eines von vier Liquid-Glass-Icons wählen.
 
 ## Bekannte Grenzen
 

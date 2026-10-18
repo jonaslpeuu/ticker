@@ -39,7 +39,7 @@ struct PositionPicker: View {
         }
         .aspectRatio(16 / 10, contentMode: .fit)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Fensterposition")
+        .accessibilityLabel("Window position")
     }
 
     @ViewBuilder
@@ -51,7 +51,7 @@ struct PositionPicker: View {
         } label: {
             ZStack {
                 if isSelected {
-                    Text("42")
+                    Text(verbatim: "42")
                         .font(.system(size: size.height * 0.5, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(width: size.width, height: size.height)

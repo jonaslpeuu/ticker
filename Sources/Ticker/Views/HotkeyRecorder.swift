@@ -9,13 +9,13 @@ struct HotkeyRecorder: View {
 
     @State private var isRecording = false
     @State private var liveModifiers: NSEvent.ModifierFlags = []
-    @State private var hint: String?
+    @State private var hint: LocalizedStringKey?
     @State private var monitor = MonitorBox()
 
     var body: some View {
         HStack(spacing: 6) {
             Button(action: toggleRecording) {
-                Text(label)
+                label
                     .font(.system(.body, design: .rounded).weight(.medium))
                     .monospaced(hotkey != nil && !isRecording)
                     .foregroundStyle(isRecording ? Color.accentColor : (hotkey == nil ? .secondary : .primary))
@@ -23,7 +23,7 @@ struct HotkeyRecorder: View {
                     .padding(.vertical, 2)
             }
             .buttonStyle(.glass)
-            .help(isRecording ? "Esc zum Abbrechen" : "Klicken und neues Tastenkürzel drücken")
+            .help(isRecording ? "Press Esc to cancel" : "Click and press a new shortcut")
 
             if hotkey != nil && !isRecording {
                 Button {
@@ -32,7 +32,7 @@ struct HotkeyRecorder: View {
                     Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
-                .help("Tastenkürzel entfernen")
+                .help("Remove shortcut")
             }
         }
         .overlay(alignment: .bottomTrailing) {
@@ -47,11 +47,11 @@ struct HotkeyRecorder: View {
         .onDisappear(perform: stop)
     }
 
-    private var label: String {
+    private var label: Text {
         if isRecording {
-            return liveModifiers.isEmpty ? "Tasten drücken…" : Hotkey.symbols(for: liveModifiers) + "…"
+            return liveModifiers.isEmpty ? Text("Press keys…") : Text(verbatim: Hotkey.symbols(for: liveModifiers) + "…")
         }
-        return hotkey?.displayString ?? "Kein Kürzel"
+        return hotkey.map { Text(verbatim: $0.displayString) } ?? Text("No shortcut")
     }
 
     private func toggleRecording() {
@@ -72,7 +72,7 @@ struct HotkeyRecorder: View {
                         if peak.count >= 2 {
                             commit(Hotkey(keyCode: nil, keyLabel: nil, modifiers: peak))
                         } else if !peak.isEmpty {
-                            hint = "Nur-Modifier-Kürzel brauchen mindestens 2 Tasten"
+                            hint = "Modifier-only shortcuts need at least 2 keys"
                         }
                         peak = []
                     } else {
@@ -87,7 +87,7 @@ struct HotkeyRecorder: View {
                     return
                 }
                 if flags.isEmpty && !Hotkey.isFunctionKey(event.keyCode) {
-                    hint = "Bitte mit ⌃, ⌥, ⇧ oder ⌘ kombinieren"
+                    hint = "Combine with ⌃, ⌥, ⇧ or ⌘"
                     return
                 }
                 commit(Hotkey(keyCode: event.keyCode, keyLabel: Hotkey.label(for: event), modifiers: flags))

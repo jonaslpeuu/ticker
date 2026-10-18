@@ -54,7 +54,7 @@ final class AppModel {
     private func applyAppIcon() {
         appIconError = AppIconManager.apply(settings.appIcon)
             ? nil
-            : "Icon konnte nicht gesetzt werden. Liegt Ticker in einem Ordner ohne Schreibrechte?"
+            : String(localized: "The icon could not be set. Is Ticker in a folder without write access?")
     }
 
     /// Launch at login is on by default: the first time Ticker runs from /Applications it

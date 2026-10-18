@@ -25,7 +25,7 @@ enum DemoStage {
         switch scene {
         case "settings":
             let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model)))
-            window.title = "Ticker Einstellungen"
+            window.title = String(localized: "Ticker Settings")
             window.styleMask = [.titled, .closable, .fullSizeContentView]
             window.toolbarStyle = .unifiedCompact
             window.level = .floating + 1
@@ -110,7 +110,7 @@ private struct DemoBackdrop: View {
                             .rotationEffect(.degrees(-18))
                             .position(x: w * 0.5, y: h * (0.05 + Double(i) * 0.075))
                     }
-                    Text("count anything.")
+                    Text(verbatim: "count anything.")
                         .font(.system(size: h * 0.16, weight: .heavy, design: .rounded))
                         .foregroundStyle(.white.opacity(dark ? 0.22 : 0.55))
                         .position(x: w * 0.42, y: h * 0.62)

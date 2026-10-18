@@ -14,7 +14,7 @@ struct TickerApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Window("Ticker Einstellungen", id: SettingsView.windowID) {
+        Window("Ticker Settings", id: SettingsView.windowID) {
             SettingsView(model: model)
         }
         .windowResizability(.contentSize)

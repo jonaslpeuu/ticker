@@ -36,15 +36,19 @@ run_scene() { # name, then args for Ticker
     settings|menu)
       # Frontmost Ticker window above the backdrop, plus a margin of backdrop around it.
       read -r x y w h < <(swift "$WININFO" ticker-top)
-      local m=50
-      screencapture -x -R"$((x - m)),$((y - m)),$((w + 2 * m)),$((h + 2 * m))" "$OUT/$name.png" ;;
+      local m=50 top=50
+      # The menu panel hangs right below the menu bar: start below it, so the (system language) clock stays out.
+      [ "$name" = menu ] && top=0
+      screencapture -x -R"$((x - m)),$((y - top)),$((w + 2 * m)),$((h + top + m))" "$OUT/$name.png" ;;
   esac
   kill "$pid" 2>/dev/null || true
   wait "$pid" 2>/dev/null || true
   echo "  → $OUT/$name.png"
 }
 
-COMMON=(-visibility always -textColor auto -sizeScale 1 -aspectRatio 1.6 -glassStyle regular -screenMargin 16 -showCountInMenuBar 1)
+# UI language for the screenshots (English by default, e.g. SHOT_LANG=de scripts/screenshots.sh)
+SHOT_LANG="${SHOT_LANG:-en}"
+COMMON=(-language "$SHOT_LANG" -AppleLanguages "($SHOT_LANG)" -visibility always -textColor auto -sizeScale 1 -aspectRatio 1.6 -glassStyle regular -screenMargin 16 -showCountInMenuBar 1)
 
 echo "Capturing screenshots…"
 run_scene hero         --demo overlay --backdrop dark  "${COMMON[@]}" -position topRight -counterValue 42

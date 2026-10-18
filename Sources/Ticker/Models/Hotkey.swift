@@ -1,5 +1,6 @@
 import AppKit
 import Carbon.HIToolbox
+import SwiftUI
 
 /// Actions that can be bound to a global keyboard shortcut.
 enum HotkeyAction: String, CaseIterable, Codable, Identifiable {
@@ -7,12 +8,12 @@ enum HotkeyAction: String, CaseIterable, Codable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .increment: "Hochzählen"
-        case .decrement: "Runterzählen"
-        case .show: "Stand anzeigen / ausblenden"
-        case .reset: "Zurücksetzen"
+        case .increment: "Count up"
+        case .decrement: "Count down"
+        case .show: "Show / hide count"
+        case .reset: "Reset"
         }
     }
 

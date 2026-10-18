@@ -1,6 +1,6 @@
 # AGENTS.md — Guide for AI / human engineers
 
-Ticker is a menu-bar-only macOS app (SwiftUI + AppKit, Swift 6, macOS 26+) that shows a counter in a floating Liquid Glass panel and changes it via global hotkeys. User-facing strings are **German**; code, comments and identifiers are **English**.
+Ticker is a menu-bar-only macOS app (SwiftUI + AppKit, Swift 6, macOS 26+) that shows a counter in a floating Liquid Glass panel and changes it via global hotkeys. The UI is localized (en, de, fr, es, it, ja, zh-Hans). English is the development language, and code, comments and identifiers are **English**.
 
 ## Build / run / verify
 
@@ -29,6 +29,7 @@ Sources/Ticker/
 ├── AppModel.swift             Singleton glue: owns AppSettings, Counter, OverlayController, HotkeyManager; perform(action)
 ├── Models/
 │   ├── AppSettings.swift      @Observable prefs, each property persisted to UserDefaults in didSet → onChange / onHotkeysChange
+│   ├── AppLanguage.swift      UI language choice, system language resolution
 │   ├── Counter.swift          @Observable counter value (UserDefaults "counterValue")
 │   └── Hotkey.swift           Hotkey (keyCode? + modifiers), HotkeyAction, labels, Carbon modifier mapping, defaults
 ├── Services/
@@ -42,7 +43,7 @@ Sources/Ticker/
 │   └── OverlayView.swift       SwiftUI number view inside the glass
 └── Views/
     ├── MenuBarView.swift       Menu bar popover (counter, ± buttons, position picker, shortcut summary)
-    ├── SettingsView.swift      Tabs: Fenster / Tastenkürzel / Zähler (Form, .grouped)
+    ├── SettingsView.swift      Tabs: Window / Shortcuts / General / App Icon (Form, .grouped)
     ├── PositionPicker.swift    3×3 mini-screen picker
     └── HotkeyRecorder.swift    Click-to-record shortcut control (pauses HotkeyManager while recording)
 ```
@@ -68,7 +69,10 @@ Sources/Ticker/
 
 ## Conventions
 
-- Keep German UI copy short and consistent ("Hochzählen", "Runterzählen", "Fenster", "Tastenkürzel", "Zähler").
+- **Localization**: write UI text as English string literals in SwiftUI (`Text("Count up")`, `Toggle("Launch at login", …)`). They are `LocalizedStringKey`s, and the English text is the key. Enum titles return `LocalizedStringKey`. Use `Text(verbatim:)` for anything that must not be translated (numbers, demo text), and `String(localized:)` only outside SwiftUI. Interpolations become format keys (`"Step size: %lld"`, `"Position: %@"` with an interpolated `Text`). Every new key must be added to **all** `Resources/Localization/<lang>.lproj/Localizable.strings` files (`en.lproj` stays empty). Lint them with `plutil -lint`.
+- Language switching is live: `MenuBarView` and `SettingsView` set `.environment(\.locale, settings.language.locale)`. `AppLanguage.persistForBundle()` also writes the app's `AppleLanguages`, so window titles and `String(localized:)` follow after a relaunch. "System" resolves against the *global* language list (`AppLanguage.systemCode`) and falls back to English.
+- New language: add the code to `AppLanguage` (case + `nativeName` + `supportedCodes`), add `CFBundleLocalizations` in `Info.plist`, and add a `<code>.lproj/Localizable.strings`.
+- Screenshots are taken in English (`SHOT_LANG`, default `en`, in `scripts/screenshots.sh`).
 - New preferences: add a property to `AppSettings` with a `didSet { store(...) }`, a default in `register(defaults:)`, the key in `resetToDefaults()`, and UI in `SettingsView`.
 - New hotkey actions: add a case to `HotkeyAction` (title and symbol) and handle it in `AppModel.perform`. Settings UI and the menu summary pick it up automatically.
 - Prefer system components and Liquid Glass APIs (`.glassEffect`, `.buttonStyle(.glass)`, `GlassEffectContainer`, `NSGlassEffectView`) over custom blur.
@@ -79,4 +83,4 @@ Sources/Ticker/
 - Unit tests for `Hotkey` encoding and the modifier-only state machine (extract it from `HotkeyManager` into a pure struct).
 - Use ScreenCaptureKit for true "what's behind the window" luminance (needs a permission flow).
 - Proper Developer ID signing and notarization, plus Sparkle updates.
-- Localization (`Localizable.xcstrings`) beyond German.
+- More languages, and a String Catalog (`.xcstrings`) once SwiftPM builds compile them reliably.

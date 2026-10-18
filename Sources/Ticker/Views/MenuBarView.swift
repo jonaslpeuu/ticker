@@ -12,7 +12,7 @@ struct MenuBarView: View {
             GlassEffectContainer(spacing: 10) {
                 HStack(spacing: 10) {
                     roundButton("minus") { model.change(by: -settings.step) }
-                        .help("Runterzählen")
+                        .help("Count down")
 
                     Text(verbatim: "\(model.counter.value)")
                         .font(.system(size: 44, weight: .semibold, design: .rounded))
@@ -24,29 +24,29 @@ struct MenuBarView: View {
                         .glassEffect(.regular, in: .rect(cornerRadius: 22))
 
                     roundButton("plus") { model.change(by: settings.step) }
-                        .help("Hochzählen")
+                        .help("Count up")
                 }
             }
 
             HStack {
-                Button("Zurücksetzen", systemImage: "arrow.counterclockwise") {
+                Button("Reset", systemImage: "arrow.counterclockwise") {
                     model.set(settings.startValue)
                 }
                 Spacer()
-                Toggle("Anzeigen", isOn: Binding(
+                Toggle("Show", isOn: Binding(
                     get: { model.overlay?.isVisible ?? false },
                     set: { model.overlay?.setPinned($0) }
                 ))
                 .toggleStyle(.switch)
                 .controlSize(.small)
                 .fixedSize()
-                .help("Fenster mit dem Zählerstand anzeigen")
+                .help("Show the counter window")
             }
             .buttonStyle(.glass)
             .controlSize(.small)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text("Position: \(settings.position.title)")
+                Text("Position: \(Text(settings.position.title))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 PositionPicker(selection: $settings.position, compact: true) {
@@ -60,13 +60,13 @@ struct MenuBarView: View {
             Divider()
 
             HStack {
-                Button("Einstellungen…", systemImage: "gearshape") {
+                Button("Settings…", systemImage: "gearshape") {
                     openWindow(id: SettingsView.windowID)
                     NSApp.activate()
                 }
                 .keyboardShortcut(",")
                 Spacer()
-                Button("Beenden", systemImage: "power") { NSApp.terminate(nil) }
+                Button("Quit", systemImage: "power") { NSApp.terminate(nil) }
                     .keyboardShortcut("q")
             }
             .buttonStyle(.glass)
@@ -74,6 +74,7 @@ struct MenuBarView: View {
         }
         .padding(16)
         .frame(width: 300)
+        .environment(\.locale, model.settings.language.locale)
     }
 
     private func roundButton(_ symbol: String, action: @escaping () -> Void) -> some View {
@@ -101,7 +102,7 @@ struct MenuBarView: View {
                 Button {
                     model.hotkeys.requestAccessibility()
                 } label: {
-                    Label("Bedienungshilfen-Zugriff für ⌃⇧-Kürzel erlauben", systemImage: "exclamationmark.triangle.fill")
+                    Label("Allow Accessibility access for ⌃⇧ shortcuts", systemImage: "exclamationmark.triangle.fill")
                         .foregroundStyle(.orange)
                 }
                 .buttonStyle(.plain)

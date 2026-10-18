@@ -1,5 +1,6 @@
 import AppKit
 import Observation
+import SwiftUI
 
 enum OverlayPosition: String, CaseIterable, Codable, Identifiable {
     case topLeft, top, topRight
@@ -8,17 +9,17 @@ enum OverlayPosition: String, CaseIterable, Codable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .topLeft: "Oben links"
-        case .top: "Oben Mitte"
-        case .topRight: "Oben rechts"
-        case .left: "Links Mitte"
-        case .center: "Mitte"
-        case .right: "Rechts Mitte"
-        case .bottomLeft: "Unten links"
-        case .bottom: "Unten Mitte"
-        case .bottomRight: "Unten rechts"
+        case .topLeft: "Top Left"
+        case .top: "Top Center"
+        case .topRight: "Top Right"
+        case .left: "Center Left"
+        case .center: "Center"
+        case .right: "Center Right"
+        case .bottomLeft: "Bottom Left"
+        case .bottom: "Bottom Center"
+        case .bottomRight: "Bottom Right"
         }
     }
 
@@ -30,11 +31,11 @@ enum OverlayPosition: String, CaseIterable, Codable, Identifiable {
 enum TextColorMode: String, CaseIterable, Codable, Identifiable {
     case auto, white, black
     var id: String { rawValue }
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .auto: "Automatisch"
-        case .white: "Weiß"
-        case .black: "Schwarz"
+        case .auto: "Automatic"
+        case .white: "White"
+        case .black: "Black"
         }
     }
 }
@@ -42,11 +43,11 @@ enum TextColorMode: String, CaseIterable, Codable, Identifiable {
 enum VisibilityMode: String, CaseIterable, Codable, Identifiable {
     case always, flash, manual
     var id: String { rawValue }
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .always: "Immer sichtbar"
-        case .flash: "Bei Änderung kurz einblenden"
-        case .manual: "Nur per Tastenkürzel"
+        case .always: "Always visible"
+        case .flash: "Briefly on change"
+        case .manual: "Only via shortcut"
         }
     }
 }
@@ -54,7 +55,7 @@ enum VisibilityMode: String, CaseIterable, Codable, Identifiable {
 enum GlassStyle: String, CaseIterable, Codable, Identifiable {
     case regular, clear
     var id: String { rawValue }
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .regular: "Regular"
         case .clear: "Clear"
@@ -65,10 +66,10 @@ enum GlassStyle: String, CaseIterable, Codable, Identifiable {
 enum ScreenChoice: String, CaseIterable, Codable, Identifiable {
     case primary, mouse
     var id: String { rawValue }
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .primary: "Hauptbildschirm"
-        case .mouse: "Bildschirm mit Mauszeiger"
+        case .primary: "Main display"
+        case .mouse: "Display with pointer"
         }
     }
 }
@@ -102,6 +103,13 @@ final class AppSettings {
     var screen: ScreenChoice { didSet { store(screen.rawValue, "screen") } }
 
     // App
+    var language: AppLanguage {
+        didSet {
+            defaults.set(language.rawValue, forKey: "language")
+            language.persistForBundle()
+        }
+    }
+
     var appIcon: AppIconChoice {
         didSet {
             defaults.set(appIcon.rawValue, forKey: "appIcon")
@@ -130,6 +138,7 @@ final class AppSettings {
             "sizeScale": 1.0, "aspectRatio": 1.6, "screenMargin": 16.0,
             "screen": ScreenChoice.primary.rawValue,
             "appIcon": AppIconChoice.tile.rawValue,
+            "language": AppLanguage.system.rawValue,
         ])
         step = d.integer(forKey: "step")
         startValue = d.integer(forKey: "startValue")
@@ -146,6 +155,7 @@ final class AppSettings {
         screenMargin = d.double(forKey: "screenMargin")
         screen = ScreenChoice(rawValue: d.string(forKey: "screen") ?? "") ?? .primary
         appIcon = AppIconChoice(rawValue: d.string(forKey: "appIcon") ?? "") ?? .tile
+        language = AppLanguage(rawValue: d.string(forKey: "language") ?? "") ?? .system
         if DemoStage.isActive {
             hotkeys = Hotkey.defaults // screenshots always show the documented defaults
         } else if let data = d.data(forKey: "hotkeys"),
@@ -159,7 +169,7 @@ final class AppSettings {
     func resetToDefaults() {
         let keys = ["step", "startValue", "allowNegative", "playSound", "showCountInMenuBar", "position",
                     "visibility", "flashDuration", "textColor", "glassStyle", "sizeScale",
-                    "aspectRatio", "screenMargin", "screen", "appIcon"]
+                    "aspectRatio", "screenMargin", "screen", "appIcon", "language"]
         keys.forEach { defaults.removeObject(forKey: $0) }
         let fresh = AppSettings()
         step = fresh.step; startValue = fresh.startValue; allowNegative = fresh.allowNegative
@@ -168,6 +178,7 @@ final class AppSettings {
         textColor = fresh.textColor; glassStyle = fresh.glassStyle; sizeScale = fresh.sizeScale
         aspectRatio = fresh.aspectRatio; screenMargin = fresh.screenMargin; screen = fresh.screen
         appIcon = fresh.appIcon
+        language = fresh.language
         hotkeys = Hotkey.defaults
     }
 

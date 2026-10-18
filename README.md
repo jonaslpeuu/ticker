@@ -27,7 +27,8 @@ Count anything with a global shortcut, from reps and laps to cups of coffee, int
 - **Text color that adapts.** Choose white, black or *Automatic*. Automatic checks how bright your wallpaper is behind the panel and switches the text color and glass appearance to match.
 - **Global shortcuts you can change.** Increment, decrement, show/hide and reset all have shortcuts that work in every app. A shortcut can be a normal combo like `⌃⇧⌫` or a **modifiers-only** combo like just `⌃⇧`.
 - **Three visibility modes.** The panel can flash briefly on every change (the default), stay always visible, or appear only when you press the shortcut.
-- **Choose your app icon.** Pick one of four Liquid Glass icons in **Settings → App-Icon**. The default *Kachel* (tile) is rendered live by macOS in every icon style: default, dark, clear and tinted.
+- **Choose your app icon.** Pick one of four Liquid Glass icons in **Settings → App Icon**. The default *Tile* is rendered live by macOS in every icon style: default, dark, clear and tinted.
+- **Speaks your language.** English, German, French, Spanish, Italian, Japanese and Simplified Chinese. Ticker follows your Mac’s language and falls back to English. You can also pick a language under **Settings → General**.
 - Step size, start value, optional negative numbers, an optional click sound, animated number changes, launch at login, and a count that is kept between launches.
 
 <table>
@@ -49,7 +50,7 @@ Count anything with a global shortcut, from reps and laps to cups of coffee, int
 | Show / hide the panel | `⌃⇧Space` |
 | Reset | none, set your own |
 
-Every shortcut can be changed under **Settings → Tastenkürzel**.
+Every shortcut can be changed under **Settings → Shortcuts**.
 
 > **Permission:** Modifiers-only shortcuts like `⌃⇧` need **System Settings → Privacy & Security → Accessibility** turned on for Ticker. Ticker asks for this on first launch. Normal key combos work without any permission.
 
@@ -109,7 +110,7 @@ Architecture, conventions and gotchas are documented in **[AGENTS.md](AGENTS.md)
 
 - *Automatic* text color only checks your **wallpaper**, not the windows on top of it, because seeing those would need Screen Recording permission. With dynamic or video wallpapers it follows the system's light/dark mode instead.
 - Modifiers-only shortcuts fire when you release the keys, and only if no other key or click happened while you held them and you held them for less than one second. That way `⌃⇧` never clashes with `⌃⇧⌫`.
-- The app's interface is in German for now. Translations are welcome (see [Contributing](CONTRIBUTING.md)).
+- New translations are welcome. Adding one takes a single file (see [Contributing](CONTRIBUTING.md)).
 
 ## License
 

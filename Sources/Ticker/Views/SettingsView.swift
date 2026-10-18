@@ -6,16 +6,18 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
-            Tab("Fenster", systemImage: "macwindow") { WindowSettings(model: model) }
-            Tab("Tastenkürzel", systemImage: "keyboard") { ShortcutSettings(model: model) }
-            Tab("Zähler", systemImage: "number") { CounterSettings(model: model) }
-            Tab("App-Icon", systemImage: "app.badge") { AppIconSettings(model: model) }
+            Tab("Window", systemImage: "macwindow") { WindowSettings(model: model) }
+            Tab("Shortcuts", systemImage: "keyboard") { ShortcutSettings(model: model) }
+            Tab("General", systemImage: "gearshape") { CounterSettings(model: model) }
+            Tab("App Icon", systemImage: "app.badge") { AppIconSettings(model: model) }
         }
         .frame(width: 540, height: 580)
+        .navigationTitle("Ticker Settings")
+        .environment(\.locale, model.settings.language.locale)
     }
 }
 
-// MARK: - Fenster
+// MARK: - Window
 
 private struct WindowSettings: View {
     let model: AppModel
@@ -28,32 +30,32 @@ private struct WindowSettings: View {
                     .frame(maxWidth: 360)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
-                Picker("Ausgewählt", selection: $settings.position) {
+                Picker("Selected", selection: $settings.position) {
                     ForEach(OverlayPosition.allCases) { Text($0.title).tag($0) }
                 }
-                Picker("Bildschirm", selection: $settings.screen) {
+                Picker("Display", selection: $settings.screen) {
                     ForEach(ScreenChoice.allCases) { Text($0.title).tag($0) }
                 }
             }
 
-            Section("Darstellung") {
-                Picker("Textfarbe", selection: $settings.textColor) {
+            Section("Appearance") {
+                Picker("Text color", selection: $settings.textColor) {
                     ForEach(TextColorMode.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                Picker("Glas", selection: $settings.glassStyle) {
+                Picker("Glass", selection: $settings.glassStyle) {
                     ForEach(GlassStyle.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                LabeledContent("Größe") {
+                LabeledContent("Size") {
                     HStack {
                         Slider(value: $settings.sizeScale, in: 0.4...1.6, step: 0.05) { editing in
                             if !editing { model.overlay?.preview() }
                         }
-                        Text(sizeDescription).monospacedDigit().foregroundStyle(.secondary).frame(width: 64, alignment: .trailing)
+                        sizeDescription.monospacedDigit().foregroundStyle(.secondary).lineLimit(1).fixedSize().frame(minWidth: 64, alignment: .trailing)
                     }
                 }
-                LabeledContent("Seitenverhältnis") {
+                LabeledContent("Aspect ratio") {
                     HStack {
                         Slider(value: $settings.aspectRatio, in: 1.0...3.0, step: 0.1) { editing in
                             if !editing { model.overlay?.preview() }
@@ -61,40 +63,40 @@ private struct WindowSettings: View {
                         Text(String(format: "%.1f : 1", settings.aspectRatio)).monospacedDigit().foregroundStyle(.secondary).frame(width: 64, alignment: .trailing)
                     }
                 }
-                LabeledContent("Randabstand") {
+                LabeledContent("Edge margin") {
                     HStack {
                         Slider(value: $settings.screenMargin, in: 0...80, step: 2)
-                        Text("\(Int(settings.screenMargin)) pt").monospacedDigit().foregroundStyle(.secondary).frame(width: 64, alignment: .trailing)
+                        Text(verbatim: "\(Int(settings.screenMargin)) pt").monospacedDigit().foregroundStyle(.secondary).frame(width: 64, alignment: .trailing)
                     }
                 }
             }
 
-            Section("Sichtbarkeit") {
-                Picker("Anzeigen", selection: $settings.visibility) {
+            Section("Visibility") {
+                Picker("Show", selection: $settings.visibility) {
                     ForEach(VisibilityMode.allCases) { Text($0.title).tag($0) }
                 }
                 if settings.visibility == .flash {
-                    LabeledContent("Einblenddauer") {
+                    LabeledContent("Display duration") {
                         HStack {
                             Slider(value: $settings.flashDuration, in: 0.5...10, step: 0.5)
                             Text(String(format: "%.1f s", settings.flashDuration)).monospacedDigit().foregroundStyle(.secondary).frame(width: 64, alignment: .trailing)
                         }
                     }
                 }
-                Button("Vorschau zeigen") { model.overlay?.preview() }
+                Button("Show preview") { model.overlay?.preview() }
             }
         }
         .formStyle(.grouped)
     }
 
-    private var sizeDescription: String {
-        settings.sizeScale == 1 ? "¼ Höhe" : String(format: "%.0f %%", model.settings.sizeScale * 100)
+    private var sizeDescription: Text {
+        settings.sizeScale == 1 ? Text("¼ height") : Text(verbatim: String(format: "%.0f %%", model.settings.sizeScale * 100))
     }
 
     private var settings: AppSettings { model.settings }
 }
 
-// MARK: - Tastenkürzel
+// MARK: - Shortcuts
 
 private struct ShortcutSettings: View {
     let model: AppModel
@@ -111,34 +113,34 @@ private struct ShortcutSettings: View {
                     .padding(.vertical, 3)
                 }
             } header: {
-                Text("Globale Tastenkürzel")
+                Text("Global shortcuts")
             } footer: {
-                Text("Klicke auf ein Kürzel und drücke die neue Kombination. Für reine Modifier-Kürzel (z. B. ⌃⇧) die Tasten gemeinsam drücken und loslassen – sie lösen beim Loslassen aus, wenn keine andere Taste dazwischen gedrückt wurde. Esc bricht ab.")
+                Text("Click a shortcut and press the new combination. For modifier-only shortcuts (e.g. ⌃⇧), press the keys together and release them. They fire on release if no other key was pressed in between. Esc cancels.")
                     .foregroundStyle(.secondary)
             }
 
-            Section("Berechtigung") {
+            Section("Permission") {
                 if model.hotkeys.isAccessibilityTrusted {
-                    Label("Bedienungshilfen-Zugriff erteilt", systemImage: "checkmark.seal.fill")
+                    Label("Accessibility access granted", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
                 } else {
                     Label {
                         Text(model.hotkeys.needsAccessibility
-                             ? "Für Modifier-Kürzel wie ⌃⇧ braucht Ticker Zugriff auf „Bedienungshilfen“."
-                             : "Nur nötig für reine Modifier-Kürzel wie ⌃⇧.")
+                             ? "Modifier-only shortcuts like ⌃⇧ need Accessibility access."
+                             : "Only needed for modifier-only shortcuts like ⌃⇧.")
                     } icon: {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
                     }
                     HStack {
-                        Button("Zugriff anfragen") { model.hotkeys.requestAccessibility() }
-                        Button("Systemeinstellungen öffnen") { model.hotkeys.openAccessibilitySettings() }
+                        Button("Request access") { model.hotkeys.requestAccessibility() }
+                        Button("Open System Settings") { model.hotkeys.openAccessibilitySettings() }
                     }
                     .buttonStyle(.glass)
                 }
             }
 
             Section {
-                Button("Standard-Kürzel wiederherstellen") { model.settings.hotkeys = Hotkey.defaults }
+                Button("Restore default shortcuts") { model.settings.hotkeys = Hotkey.defaults }
             }
         }
         .formStyle(.grouped)
@@ -152,7 +154,7 @@ private struct ShortcutSettings: View {
     }
 }
 
-// MARK: - Zähler
+// MARK: - General
 
 private struct CounterSettings: View {
     let model: AppModel
@@ -160,39 +162,54 @@ private struct CounterSettings: View {
     var body: some View {
         @Bindable var settings = model.settings
         Form {
-            Section("Zähler") {
-                LabeledContent("Aktueller Stand") {
+            Section("Counter") {
+                LabeledContent("Current count") {
                     TextField("", value: Binding(get: { model.counter.value }, set: { model.set($0) }), format: .number)
                         .multilineTextAlignment(.trailing)
                         .frame(width: 120)
                 }
-                Stepper("Schrittweite: \(settings.step)", value: $settings.step, in: 1...1000)
-                LabeledContent("Startwert (Zurücksetzen)") {
+                Stepper("Step size: \(settings.step)", value: $settings.step, in: 1...1000)
+                LabeledContent("Start value (reset)") {
                     TextField("", value: $settings.startValue, format: .number)
                         .multilineTextAlignment(.trailing)
                         .frame(width: 120)
                 }
-                Toggle("Negative Werte erlauben", isOn: $settings.allowNegative)
-                Toggle("Klick-Ton beim Zählen", isOn: $settings.playSound)
+                Toggle("Allow negative values", isOn: $settings.allowNegative)
+                Toggle("Click sound when counting", isOn: $settings.playSound)
+            }
+
+            Section {
+                Picker("Language", selection: $settings.language) {
+                    Text("System (\(AppLanguage.system.nativeName))").tag(AppLanguage.system)
+                    Divider()
+                    ForEach(AppLanguage.allCases.filter { $0 != .system }) { language in
+                        Text(verbatim: language.nativeName).tag(language)
+                    }
+                }
+            } header: {
+                Text("Language")
+            } footer: {
+                Text("By default Ticker uses your Mac’s language. Languages without a translation fall back to English.")
+                    .foregroundStyle(.secondary)
             }
 
             Section("App") {
-                Toggle("Zahl in der Menüleiste anzeigen", isOn: $settings.showCountInMenuBar)
-                Toggle("Bei Anmeldung starten", isOn: Binding(
+                Toggle("Show count in menu bar", isOn: $settings.showCountInMenuBar)
+                Toggle("Launch at login", isOn: Binding(
                     get: { model.launchAtLogin },
                     set: { model.launchAtLogin = $0 }
                 ))
             }
 
             Section {
-                Button("Alle Einstellungen zurücksetzen", role: .destructive) { model.settings.resetToDefaults() }
+                Button("Reset all settings", role: .destructive) { model.settings.resetToDefaults() }
             }
         }
         .formStyle(.grouped)
     }
 }
 
-// MARK: - App-Icon
+// MARK: - App Icon
 
 private struct AppIconSettings: View {
     let model: AppModel
@@ -214,13 +231,13 @@ private struct AppIconSettings: View {
                 }
                 .padding(.vertical, 8)
             } header: {
-                Text("App-Icon")
+                Text("App Icon")
             } footer: {
                 VStack(alignment: .leading, spacing: 6) {
                     if let error = model.appIconError {
                         Label(error, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.orange)
                     }
-                    Text("„Kachel“ rendert macOS live in Liquid Glass, passend zu jedem Icon-Stil. Die anderen Icons werden als Bild passend zu deinem aktuellen Hell/Dunkel-Stil gesetzt. Finder und Programme-Ordner zeigen die Änderung nach wenigen Sekunden.")
+                    Text("“Tile” is rendered live by macOS in Liquid Glass and adapts to every icon style. The other icons are applied as images that match your current light or dark icon style. Finder and the Applications folder update after a few seconds.")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -279,7 +296,7 @@ private struct IconTile: View {
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
         .animation(.easeOut(duration: 0.15), value: hovering)
-        .accessibilityLabel("App-Icon \(choice.title)")
+        .accessibilityLabel(Text("App icon \(Text(choice.title))"))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
