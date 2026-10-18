@@ -81,6 +81,7 @@ final class AppSettings {
     @ObservationIgnored private let defaults = UserDefaults.standard
     @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored var onHotkeysChange: (() -> Void)?
+    @ObservationIgnored var onAppIconChange: (() -> Void)?
 
     // Counter
     var step: Int { didSet { store(step, "step") } }
@@ -99,6 +100,14 @@ final class AppSettings {
     var aspectRatio: Double { didSet { store(aspectRatio, "aspectRatio") } }
     var screenMargin: Double { didSet { store(screenMargin, "screenMargin") } }
     var screen: ScreenChoice { didSet { store(screen.rawValue, "screen") } }
+
+    // App
+    var appIcon: AppIconChoice {
+        didSet {
+            defaults.set(appIcon.rawValue, forKey: "appIcon")
+            onAppIconChange?()
+        }
+    }
 
     // Shortcuts
     var hotkeys: [HotkeyAction: Hotkey] {
@@ -120,6 +129,7 @@ final class AppSettings {
             "glassStyle": GlassStyle.regular.rawValue,
             "sizeScale": 1.0, "aspectRatio": 1.6, "screenMargin": 16.0,
             "screen": ScreenChoice.primary.rawValue,
+            "appIcon": AppIconChoice.tile.rawValue,
         ])
         step = d.integer(forKey: "step")
         startValue = d.integer(forKey: "startValue")
@@ -135,6 +145,7 @@ final class AppSettings {
         aspectRatio = d.double(forKey: "aspectRatio")
         screenMargin = d.double(forKey: "screenMargin")
         screen = ScreenChoice(rawValue: d.string(forKey: "screen") ?? "") ?? .primary
+        appIcon = AppIconChoice(rawValue: d.string(forKey: "appIcon") ?? "") ?? .tile
         if DemoStage.isActive {
             hotkeys = Hotkey.defaults // screenshots always show the documented defaults
         } else if let data = d.data(forKey: "hotkeys"),
@@ -148,7 +159,7 @@ final class AppSettings {
     func resetToDefaults() {
         let keys = ["step", "startValue", "allowNegative", "playSound", "showCountInMenuBar", "position",
                     "visibility", "flashDuration", "textColor", "glassStyle", "sizeScale",
-                    "aspectRatio", "screenMargin", "screen"]
+                    "aspectRatio", "screenMargin", "screen", "appIcon"]
         keys.forEach { defaults.removeObject(forKey: $0) }
         let fresh = AppSettings()
         step = fresh.step; startValue = fresh.startValue; allowNegative = fresh.allowNegative
@@ -156,6 +167,7 @@ final class AppSettings {
         position = fresh.position; visibility = fresh.visibility; flashDuration = fresh.flashDuration
         textColor = fresh.textColor; glassStyle = fresh.glassStyle; sizeScale = fresh.sizeScale
         aspectRatio = fresh.aspectRatio; screenMargin = fresh.screenMargin; screen = fresh.screen
+        appIcon = fresh.appIcon
         hotkeys = Hotkey.defaults
     }
 

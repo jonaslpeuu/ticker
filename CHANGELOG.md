@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 (2026-10-18)
+
+- New app icon built with Icon Composer. macOS renders it live in Liquid Glass and in every icon style (default, dark, clear, tinted).
+- Settings → App-Icon: choose between four icons (Kachel, Plus Eins, Strichliste, Zählrolle)
+- Menu bar panel: the visibility toggle label no longer wraps
+
 ## 1.0.0 (2026-10-18)
 
 First public release.

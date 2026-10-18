@@ -9,7 +9,7 @@ format = "UDZO"
 filesystem = "HFS+"
 files = [app]
 symlinks = {"Applications": "/Applications"}
-icon = os.path.join(root, "Resources", "AppIcon.icns")
+icon = os.path.join(app, "Contents", "Resources", "AppIcon.icns")
 background = os.path.join(root, "Resources", "dmg-background.tiff")
 
 window_rect = ((200, 160), (660, 428))  # 400 pt background + title bar

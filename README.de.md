@@ -24,6 +24,7 @@ Ein schlanker Zähler für macOS 26+ (Tahoe und neuer), der in der **Menüleiste
   - *Immer sichtbar*
   - *Nur per Tastenkürzel*: Das „Anzeigen“-Kürzel blendet ein und aus.
 - **Frei belegbare globale Kürzel** für Hochzählen, Runterzählen, Anzeigen und Zurücksetzen. Möglich sind normale Kombinationen (z. B. `⌃⇧⌫`) und **reine Modifier-Kombinationen** (z. B. nur `⌃⇧`).
+- **App-Icon wählbar**: vier Liquid-Glass-Icons unter **Einstellungen → App-Icon**. Das Standard-Icon *Kachel* rendert macOS live in jedem Icon-Stil (Standard, Dunkel, Klar, Getönt).
 - Schrittweite, Startwert, negative Werte erlauben, Klick-Ton, Zahl in der Menüleiste anzeigen, Start bei der Anmeldung.
 - Animierte Zahl (`numericText`-Übergang), Zählerstand bleibt nach einem Neustart erhalten.
 
@@ -48,7 +49,7 @@ Ein schlanker Zähler für macOS 26+ (Tahoe und neuer), der in der **Menüleiste
 
 ## Download
 
-1. **Ticker-1.0.0.dmg** aus dem [neuesten Release](https://github.com/jonaslpeuu/ticker/releases/latest) laden.
+1. **Ticker-1.1.0.dmg** aus dem [neuesten Release](https://github.com/jonaslpeuu/ticker/releases/latest) laden.
 2. Öffnen und **Ticker** auf **Programme** ziehen.
 
 <img src="docs/images/dmg-window.png" alt="DMG-Fenster: Ticker in den Programme-Ordner ziehen" width="520">
@@ -103,10 +104,10 @@ Release-DMG bauen (universal: Apple Silicon + Intel):
 scripts/make-dmg.sh
 ```
 
-Das App-Icon neu erzeugen:
+Die App-Icons neu erzeugen:
 
 ```bash
-swift scripts/make-icon.swift
+swift scripts/make-icons.swift && scripts/render-icon-previews.sh
 ```
 
 ## Bedienung

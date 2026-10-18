@@ -25,6 +25,7 @@ final class AppModel {
             guard let self else { return }
             self.hotkeys.apply(self.settings.hotkeys)
         }
+        settings.onAppIconChange = { [weak self] in self?.applyAppIcon() }
         if DemoStage.isActive {
             DemoStage.start(model: self)
             return
@@ -35,6 +36,25 @@ final class AppModel {
             hotkeys.requestAccessibility()
         }
         enableLaunchAtLoginOnFirstInstall()
+        // Alternative icons are static images: refresh them when the icon style may have changed,
+        // and remove a stale custom icon when "tile" is selected.
+        applyAppIcon()
+        DistributedNotificationCenter.default().addObserver(forName: .init("AppleInterfaceThemeChangedNotification"),
+                                                            object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self, self.settings.appIcon != .tile else { return }
+                self.applyAppIcon()
+            }
+        }
+    }
+
+    /// Set when the last icon change could not be written to the app bundle.
+    private(set) var appIconError: String?
+
+    private func applyAppIcon() {
+        appIconError = AppIconManager.apply(settings.appIcon)
+            ? nil
+            : "Icon konnte nicht gesetzt werden. Liegt Ticker in einem Ordner ohne Schreibrechte?"
     }
 
     /// Launch at login is on by default: the first time Ticker runs from /Applications it

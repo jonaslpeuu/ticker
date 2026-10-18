@@ -9,6 +9,7 @@ struct SettingsView: View {
             Tab("Fenster", systemImage: "macwindow") { WindowSettings(model: model) }
             Tab("Tastenkürzel", systemImage: "keyboard") { ShortcutSettings(model: model) }
             Tab("Zähler", systemImage: "number") { CounterSettings(model: model) }
+            Tab("App-Icon", systemImage: "app.badge") { AppIconSettings(model: model) }
         }
         .frame(width: 540, height: 580)
     }
@@ -188,5 +189,97 @@ private struct CounterSettings: View {
             }
         }
         .formStyle(.grouped)
+    }
+}
+
+// MARK: - App-Icon
+
+private struct AppIconSettings: View {
+    let model: AppModel
+    @Environment(\.colorScheme) private var colorScheme
+
+    private let columns = [GridItem(.adaptive(minimum: 104, maximum: 140), spacing: 16)]
+
+    var body: some View {
+        Form {
+            Section {
+                LazyVGrid(columns: columns, spacing: 18) {
+                    ForEach(AppIconChoice.allCases) { choice in
+                        IconTile(choice: choice,
+                                 isSelected: model.settings.appIcon == choice,
+                                 dark: AppIconManager.systemIconsAreDark) {
+                            withAnimation(.spring(duration: 0.3, bounce: 0.3)) { model.settings.appIcon = choice }
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+            } header: {
+                Text("App-Icon")
+            } footer: {
+                VStack(alignment: .leading, spacing: 6) {
+                    if let error = model.appIconError {
+                        Label(error, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                    }
+                    Text("„Kachel“ rendert macOS live in Liquid Glass, passend zu jedem Icon-Stil. Die anderen Icons werden als Bild passend zu deinem aktuellen Hell/Dunkel-Stil gesetzt. Finder und Programme-Ordner zeigen die Änderung nach wenigen Sekunden.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+private struct IconTile: View {
+    let choice: AppIconChoice
+    let isSelected: Bool
+    let dark: Bool
+    let action: () -> Void
+
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                ZStack(alignment: .topTrailing) {
+                    Group {
+                        if let image = AppIconManager.image(for: choice, dark: dark) {
+                            Image(nsImage: image).resizable().interpolation(.high)
+                        } else {
+                            RoundedRectangle(cornerRadius: 20).fill(.quaternary)
+                        }
+                    }
+                    .frame(width: 88, height: 88)
+                    .scaleEffect(hovering && !isSelected ? 1.05 : 1)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
+                            .fill(isSelected ? Color.accentColor.opacity(0.14) : .clear)
+                    }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
+                            .strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 2.5)
+                    }
+
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(.white, Color.accentColor)
+                            .background(Circle().fill(.background).padding(2))
+                            .offset(x: 6, y: -6)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                Text(choice.title)
+                    .font(.callout.weight(isSelected ? .semibold : .regular))
+                    .foregroundStyle(isSelected ? .primary : .secondary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .animation(.easeOut(duration: 0.15), value: hovering)
+        .accessibilityLabel("App-Icon \(choice.title)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

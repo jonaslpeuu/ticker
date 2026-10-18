@@ -25,9 +25,17 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/Ticker"
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
-if [ -f "$ROOT/Resources/AppIcon.icns" ]; then
-  cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
-fi
+# App icon: compile the default Icon Composer document (Liquid Glass, rendered by the system)
+# into Assets.car + a fallback AppIcon.icns.
+ICONTMP="$(mktemp -d)"
+cp -R "$ROOT/Resources/Icons/tile.icon" "$ICONTMP/AppIcon.icon"
+xcrun actool "$ICONTMP/AppIcon.icon" --compile "$APP/Contents/Resources" --app-icon AppIcon \
+  --platform macosx --minimum-deployment-target 26.0 \
+  --output-partial-info-plist "$ICONTMP/partial.plist" >/dev/null
+rm -rf "$ICONTMP"
+# Pre-rendered PNGs for the icon picker and the alternative icons.
+mkdir -p "$APP/Contents/Resources/Icons"
+cp "$ROOT"/Resources/Icons/*.png "$APP/Contents/Resources/Icons/"
 
 # Ad-hoc signature. Note: macOS ties Accessibility permission to the signature, so after a
 # rebuild you may need to re-enable Ticker under Privacy & Security → Accessibility.
