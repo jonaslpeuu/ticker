@@ -46,7 +46,22 @@ Ein schlanker Zähler für macOS 26+ (Tahoe und neuer), der in der **Menüleiste
 
 > **Berechtigung:** Reine Modifier-Kürzel wie `⌃⇧` brauchen den Zugriff unter **Systemeinstellungen → Datenschutz & Sicherheit → Bedienungshilfen**. Ticker fragt beim ersten Start danach. Normale Kombinationen funktionieren ohne Berechtigung.
 
-## Installieren (empfohlen)
+## Download
+
+1. **Ticker-1.0.0.dmg** aus dem [neuesten Release](https://github.com/jonaslpeuu/ticker/releases/latest) laden.
+2. Öffnen und **Ticker** auf **Programme** ziehen.
+
+<img src="docs/images/dmg-window.png" alt="DMG-Fenster: Ticker in den Programme-Ordner ziehen" width="520">
+
+3. Ticker aus dem Programme-Ordner starten. Ticker ist noch nicht von Apple notarisiert, deshalb blockiert macOS den ersten Start. Unter **Systemeinstellungen → Datenschutz & Sicherheit** auf **Trotzdem öffnen** klicken. Das ist nur einmal nötig. Alternativ im Terminal:
+
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/Ticker.app
+   ```
+
+Beim ersten Start trägt sich Ticker als Anmeldeobjekt ein und startet danach nach jedem Neustart automatisch.
+
+## Aus dem Quellcode installieren
 
 Voraussetzungen: macOS 26 oder neuer und Xcode 26 oder neuer (Swift 6.2+).
 
@@ -80,6 +95,12 @@ Screenshots für die README neu erzeugen (Demo-Modus mit Beispiel-Hintergrund, b
 
 ```bash
 scripts/screenshots.sh
+```
+
+Release-DMG bauen (universal: Apple Silicon + Intel):
+
+```bash
+scripts/make-dmg.sh
 ```
 
 Das App-Icon neu erzeugen:

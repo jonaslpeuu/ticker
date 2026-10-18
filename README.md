@@ -57,7 +57,22 @@ Every shortcut can be changed under **Settings → Tastenkürzel**.
 - macOS 26 Tahoe or newer
 - Xcode 26 or newer (Swift 6.2) to build
 
-## Install
+## Download
+
+1. Download **Ticker-1.0.0.dmg** from the [latest release](https://github.com/jonaslpeuu/ticker/releases/latest).
+2. Open it and drag **Ticker** onto **Applications**.
+
+<img src="docs/images/dmg-window.png" alt="DMG window: drag Ticker to Applications" width="520">
+
+3. Start Ticker from Applications. Ticker isn't notarized by Apple yet, so the first launch is blocked. Go to **System Settings → Privacy & Security** and click **Open Anyway**. You only have to do this once. Alternatively, run this in Terminal:
+
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/Ticker.app
+   ```
+
+Ticker adds itself to your login items on first launch, so it starts automatically after every restart.
+
+## Build from source
 
 ```bash
 git clone https://github.com/jonaslpeuu/ticker.git
@@ -75,6 +90,7 @@ The app is signed with the first *Apple Development* certificate in your keychai
 scripts/build-app.sh release --run                          # build dist/Ticker.app and start it
 swift build --scratch-path ~/Library/Caches/Ticker-build    # compile only
 scripts/screenshots.sh                                      # regenerate docs/images (demo mode)
+scripts/make-dmg.sh                                         # universal release DMG → dist/Ticker-<version>.dmg
 swift scripts/make-icon.swift                               # regenerate the app icon
 ```
 

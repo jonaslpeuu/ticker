@@ -13,9 +13,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SCRATCH="${TICKER_BUILD_DIR:-$HOME/Library/Caches/Ticker-build}"
 APP="$ROOT/dist/Ticker.app"
 
+# TICKER_UNIVERSAL=1 builds for Apple silicon and Intel (used for release DMGs).
+ARCH_ARGS=()
+if [ "${TICKER_UNIVERSAL:-0}" = 1 ]; then ARCH_ARGS=(--arch arm64 --arch x86_64); fi
+
 cd "$ROOT"
-swift build -c "$CONFIG" --scratch-path "$SCRATCH"
-BIN="$(swift build -c "$CONFIG" --scratch-path "$SCRATCH" --show-bin-path)/Ticker"
+swift build -c "$CONFIG" --scratch-path "$SCRATCH" "${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"}"
+BIN="$(swift build -c "$CONFIG" --scratch-path "$SCRATCH" "${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"}" --show-bin-path)/Ticker"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"

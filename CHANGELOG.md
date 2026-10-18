@@ -11,3 +11,4 @@ First public release.
 - Visibility modes: flash on change, always visible, shortcut only
 - Launch at login by default when installed to `/Applications`
 - Demo mode and scripts for reproducible README screenshots
+- Universal (Apple silicon + Intel) DMG installer with a drag-to-Applications window

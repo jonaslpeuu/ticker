@@ -7,6 +7,7 @@ Ticker is a menu-bar-only macOS app (SwiftUI + AppKit, Swift 6, macOS 26+) that 
 ```bash
 scripts/install.sh                      # release build, signs with Apple Development cert, installs to /Applications, launches
 scripts/build-app.sh release --run      # builds dist/Ticker.app (ad hoc unless TICKER_SIGN_IDENTITY), launches
+scripts/make-dmg.sh                     # universal (arm64+x86_64) app, ad hoc signed, dist/Ticker-<version>.dmg via dmgbuild
 scripts/screenshots.sh [scene]          # regenerates docs/images/*.png via demo mode (needs Screen Recording permission)
 swift build --scratch-path ~/Library/Caches/Ticker-build   # compile check only
 ```
@@ -14,6 +15,8 @@ swift build --scratch-path ~/Library/Caches/Ticker-build   # compile check only
 - **Always pass `--scratch-path` outside the repo.** A repo path containing spaces or a `"` breaks SwiftPM's linker file list (`clang: no such file or directory …`). Swift compilation itself is fine. The build script handles this for you.
 - No Xcode project. The SwiftPM executable target is wrapped into an `.app` by `scripts/build-app.sh` using `Resources/Info.plist` (`LSUIElement = true`, bundle id `local.ticker.Ticker`).
 - **Demo mode** (`Demo/DemoStage.swift`): `Ticker --demo overlay|settings|menu [--backdrop dark|light] [-<prefKey> <value> …]` shows a generated full-screen sample backdrop above normal windows and below the overlay, and skips hotkeys and the login item. Preferences are overridden through the argument domain (read, never written). `BackgroundSampler` reports the backdrop brightness while demo mode is active. `scripts/screenshots.sh` drives it, and `scripts/window-info.swift` finds window bounds.
+- **Release DMG**: `scripts/make-dmg.sh` installs `dmgbuild` into a venv in the build cache and uses `scripts/dmg-settings.py`. The background (`Resources/dmg-background.tiff`, 1x+2x) is drawn by `scripts/make-dmg-background.swift`. It is intentionally minimal: plain white, a grey arrow and one English hint line. Keep it that way. Icon positions in both files must match. The version comes from `CFBundleShortVersionString` in `Resources/Info.plist`. Release builds are signed ad hoc, so no personal certificate is embedded. They are not notarized, which means users must click "Open Anyway" once.
+- To release: bump the version in `Info.plist` and `CHANGELOG.md`, run `scripts/make-dmg.sh`, tag `vX.Y.Z`, then `gh release create vX.Y.Z dist/Ticker-X.Y.Z.dmg`.
 - No test target yet. Verify by building, launching, and checking the behaviour by hand. `defaults read local.ticker.Ticker` shows the persisted state. Window placement can be checked without screen-recording permission via `CGWindowListCopyWindowInfo` (owner name `Ticker`).
 - After changing the binary, macOS may drop the Accessibility grant (ad-hoc signature changes). If modifier-only hotkeys stop working, remove Ticker from System Settings → Privacy & Security → Accessibility and add it again. Set `TICKER_SIGN_IDENTITY` to a real identity to avoid this.
 
