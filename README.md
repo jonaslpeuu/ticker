@@ -60,7 +60,7 @@ Every shortcut can be changed under **Settings → Tastenkürzel**.
 ## Install
 
 ```bash
-git clone <this-repo> ticker
+git clone https://github.com/jonaslpeuu/ticker.git
 cd ticker
 scripts/install.sh
 ```

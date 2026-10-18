@@ -51,7 +51,7 @@ Ein schlanker Zähler für macOS 26+ (Tahoe und neuer), der in der **Menüleiste
 Voraussetzungen: macOS 26 oder neuer und Xcode 26 oder neuer (Swift 6.2+).
 
 ```bash
-git clone <dieses-repo> ticker
+git clone https://github.com/jonaslpeuu/ticker.git
 cd ticker
 scripts/install.sh
 ```
