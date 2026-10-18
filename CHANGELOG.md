@@ -1,0 +1,13 @@
+# Changelog
+
+## 1.0.0 (2026-10-18)
+
+First public release.
+
+- Menu bar counter with a floating panel in Apple's Liquid Glass (`NSGlassEffectView`)
+- 9 panel positions (default: top right), size ¼ of the screen height, adjustable scale, aspect ratio and margin
+- Automatic, white or black text color; *Regular* or *Clear* glass
+- Global shortcuts you can change, including modifiers-only combos (`⌃⇧`)
+- Visibility modes: flash on change, always visible, shortcut only
+- Launch at login by default when installed to `/Applications`
+- Demo mode and scripts for reproducible README screenshots
